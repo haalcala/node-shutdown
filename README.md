@@ -35,7 +35,7 @@ A library to safely shutdown your NodeJS app
                 }
                 else {
                     if (shutdown.time_remaining < 10) { // if you need more time
-                        shutdown.extend(10); // extend the timer for 10 more seconds
+                        shutdown.shutdown(10); // extend the timer for 10 more seconds
                     }
                 }
             }

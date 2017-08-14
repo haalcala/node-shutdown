@@ -5,10 +5,72 @@ var ps = require('ps-node');
 
 var $ = exports;
 
-var handlers = {};
+var handlers = {}, default_shutdown_time = 120, shutdown_start, shutdown_time, shutdown_timer_id, log_interval, last_log;
 
 $.on = function (key, fn) {
 	handlers[key] = fn;
+};
+
+$.shutdown = function (_shutdown_time) {
+	var _shutdown_fn = handlers.shutdown;
+
+	shutdown_time = default_shutdown_time;
+	shutdown_start = new Date();
+
+	if (_shutdown_time >= 5) {
+		shutdown_time = _shutdown_time;
+	}
+
+	shutdown_time *= 1000;
+
+	log_interval = shutdown_time / 4;
+
+	if (log_interval > 20) {
+		log_interval = 20;
+	}
+	else if (log_interval < 5) {
+		log_interval = 5;
+	}
+
+	log_interval *= 1000;
+	last_log = null;
+
+	$.time_remaining = shutdown_time - (new Date() - shutdown_start);
+
+	if (!shutdown_timer_id) {
+		shutdown_timer_id = setInterval(function () {
+			if ((new Date() - shutdown_start) >= shutdown_time) {
+				console.log("Process exiting now.");
+				process.exit(0);
+			}
+			else {
+				showLog();
+			}
+
+			$.time_remaining = shutdown_time - (new Date() - shutdown_start);
+		}, 500);
+	}
+	else {
+		console.log("Existing shutdown command already in progress. Timer will be updated.");
+	}
+
+	showLog();
+
+	function showLog() {
+		if (!last_log || ((new Date() - last_log) >= log_interval)) {
+			last_log = new Date();
+
+			console.log("Time remaining to exit the process: " + (shutdown_time - (new Date() - shutdown_start)) + "ms");
+		}
+	}
+
+	if ($.shutting_down) {
+		return Promise.resolve();
+	}
+
+	$.shutting_down = true;
+
+	return typeof(_shutdown_fn) == "function" && _shutdown_fn();
 };
 
 $.configure  = function(options) {
@@ -26,10 +88,9 @@ $.configure  = function(options) {
 
 	options = options || {};
 
-	var shutdown_timer_id,
-		shutdown_time = options && options.grace_period || 120,
-		start = new Date(), log_interval, last_log,
-		portPath = options.port, pid_file = options.pid_file;
+	var portPath = options.port, pid_file = options.pid_file;
+
+	default_shutdown_time = options && options.grace_period || 120;
 
 	var previous_pid = fs.existsSync(pid_file) && parseInt(fs.readFileSync(pid_file));
 
@@ -96,13 +157,7 @@ $.configure  = function(options) {
 						if (request == "shutdown") {
 							console.log("Shutting down!!!");
 
-							if ($.shutting_down) {
-								return;
-							}
-
-							$.shutting_down = true;
-
-							return fn();
+							return $.shutdown(params[0]);
 						}
 						else if (request == "exit") {
 							return {success: true};
@@ -127,57 +182,6 @@ $.configure  = function(options) {
 
 						if (request == "exit") {
 							socket.end();
-						}
-
-						if (request == "shutdown") {
-							shutdown_time = 120;
-							start = new Date();
-
-							if (params.length > 0) {
-								var _shutdown_time = parseInt(params[0]);
-
-								if (_shutdown_time >= 5) {
-									shutdown_time = _shutdown_time;
-								}
-							}
-
-							shutdown_time *= 1000;
-
-							log_interval = shutdown_time / 4;
-
-							if (log_interval > 20) {
-								log_interval = 20;
-							}
-							else if (log_interval < 5) {
-								log_interval = 5;
-							}
-
-							log_interval *= 1000;
-
-							if (!shutdown_timer_id) {
-								shutdown_timer_id = setInterval(function () {
-									if ((new Date() - start) >= shutdown_time) {
-										console.log("Process exiting now.");
-										process.exit(0);
-									}
-									else {
-										showLog();
-									}
-								}, 1000); // 12s to finally complete all pending tasks
-							}
-							else {
-								console.log("Existing shutdown command already in progress. Timer will be updated.");
-							}
-
-							showLog();
-
-							function showLog() {
-								if (!last_log || ((new Date() - last_log) >= log_interval)) {
-									last_log = new Date();
-
-									console.log("Time remaining to exit the process: " + (shutdown_time - (new Date() - start)) + "ms");
-								}
-							}
 						}
 					});
 
