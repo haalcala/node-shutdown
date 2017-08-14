@@ -5,6 +5,7 @@ A library to safely shutdown your NodeJS app
 
 # Usage
 
+```js
 	var shutdown = require("node-shutdown");
 
 	shutdown.configure({
@@ -43,17 +44,20 @@ A library to safely shutdown your NodeJS app
             }
         }, 1000);
     }
-
+```
 ## In other modules
 
+```js
     var shutdown = require("node-shutdown"); // it's a singleton!
 
     if (shutdown.shutting_down) {
         // do something great!
     }
+```
 
 ## Shutdown through socket -- in your terminal
 
+```bash
 	// shutdown in 120 seconds (default)
 	$ echo shutdown | nc -U MyApp.sock
 
@@ -61,6 +65,7 @@ A library to safely shutdown your NodeJS app
 	$ echo shutdown 10 | nc -U MyApp.sock
 
 	// the shutdown command can be called repeatedly and it will reset the timer to the new one mentioned
+```
 
 # Use case
 
@@ -72,12 +77,18 @@ It is recommended to not close database connections so that pending tasks should
 
 # Bonus feature
 
+```js
     shutdown.on("maintenance", maintananceFunc); // set your app to maintenance mode!
 
     shutdown.on("yet_another_function", makeSomethingGreatHappen); // set your app to maintenance mode!
+```
 
 ## in your terminal
 
+```bash
     $ echo maintenance | nc -U MyApp.sock
 
     $ echo yet_another_function | nc -U MyApp.sock
+```
+
+
