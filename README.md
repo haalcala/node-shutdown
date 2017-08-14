@@ -69,3 +69,15 @@ Safely shutdown your app by stop accepting incoming requests.
 # Precaution
 
 It is recommended to not close database connections so that pending tasks should be able to complete accordingly
+
+# Bonus feature
+
+    shutdown.on("maintenance", maintananceFunc); // set your app to maintenance mode!
+
+    shutdown.on("yet_another_function", makeSomethingGreatHappen); // set your app to maintenance mode!
+
+## in your terminal
+
+    $ echo maintenance | nc -U MyApp.sock
+
+    $ echo yet_another_function | nc -U MyApp.sock
