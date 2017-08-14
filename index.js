@@ -3,8 +3,15 @@ var fs = require("fs");
 var Promise = require("bluebird");
 var ps = require('ps-node');
 
-function Shutdown(options) {
+var $ = exports;
 
+var handlers = {};
+
+$.on = function (key, fn) {
+	handlers[key] = fn;
+};
+
+$.configure  = function(options) {
 	if (!options) {
 		throw new Error("Missing required parameter 'options'");
 	}
@@ -17,14 +24,6 @@ function Shutdown(options) {
 		throw new Error("Missing required parameter 'options.pid_file'");
 	}
 
-	var $ = exports;
-
-	var handlers = {};
-
-	$.on = function (key, fn) {
-		handlers[key] = fn;
-	};
-
 	options = options || {};
 
 	var shutdown_timer_id,
@@ -34,10 +33,10 @@ function Shutdown(options) {
 
 	var previous_pid = fs.existsSync(pid_file) && parseInt(fs.readFileSync(pid_file));
 
-	console.log("previous_pid", previous_pid);
-	console.log("process.pid", process.pid);
+	// console.log("previous_pid", previous_pid);
+	// console.log("process.pid", process.pid);
 
-	Promise.resolve()
+	return Promise.resolve()
 		.then(function () {
 			if (previous_pid) {
 				return new Promise(function (resolve, reject) {
@@ -190,6 +189,5 @@ function Shutdown(options) {
 				console.log(" server listening on " + portPath);
 			});
 		});
-}
+};
 
-exports.configure = Shutdown;
