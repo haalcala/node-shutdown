@@ -68,7 +68,7 @@ $.configure  = function(options) {
 			}
 		})
 		.then(function () {
-			fs.unlinkSync(portPath);
+			fs.existsSync(portPath)  && fs.unlinkSync(portPath);
 			fs.writeFileSync(pid_file, process.pid);
 
 			var command_server = net.createServer(function(socket) {
