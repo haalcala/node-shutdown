@@ -5,11 +5,13 @@ A library to safely shutdown your NodeJS app
 
 # Usage
 
-	var shutdown = require("node-shutdown")({
-	    port: "MyApp.sock",
-	    pid_file: "MyApp.pid"
-	    grace_period: 10 // In seconds. default is 120 (2 minutes)
-	});
+	var shutdown = require("node-shutdown");
+
+	shutdown.configure({
+                       	    port: "MyApp.sock",
+                       	    pid_file: "MyApp.pid"
+                       	    grace_period: 10 // In seconds. default is 120 (2 minutes)
+                       	});
 
     shutdown.on("shutdown", MyShutdownFunc); // NOTE: This is not an event emitter kind. calling this multiple times will cause the previous value to be overwritten.  In short, there can only be one, and it supports promise
 
@@ -42,7 +44,15 @@ A library to safely shutdown your NodeJS app
         }, 1000);
     }
 
-## in your terminal
+## In other modules
+
+    var shutdown = require("node-shutdown"); // it's a singleton!
+
+    if (shutdown.shutting_down) {
+        // do something great!
+    }
+
+## Shutdown through socket -- in your terminal
 
 	// shutdown in 120 seconds (default)
 	$ echo shutdown | nc -U MyApp.sock
