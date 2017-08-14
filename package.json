@@ -1,6 +1,6 @@
 {
   "name": "node-shutdown",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Safely shutdown NodeJS",
   "main": "index.js",
   "scripts": {
