@@ -1,0 +1,37 @@
+{
+  "name": "node-shutdown",
+  "version": "1.0.0",
+  "description": "Safely shutdown NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/haalcala/node-shutdown.git"
+  },
+  "keywords": [
+    "shutdown",
+    "safe",
+    "graceful",
+    "kill",
+    "utility",
+    "commander",
+    "common"
+  ],
+  "author": "Harold Alcala",
+  "email": "harold.alcala@gmail.com",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "mocha": "^2.2.4"
+  },
+  "bugs": {
+    "url": "https://github.com/haalcala/node-shutdown/issues"
+  },
+  "homepage": "https://github.com/haalcala/node-shutdown#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "ps-node": "^0.1.6"
+  }
+}
