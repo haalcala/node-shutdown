@@ -1,5 +1,7 @@
 var shutdown = require("../index");
 
+require("./index2");
+
 shutdown.configure({
 	port: "MyApp.sock",
 	pid_file: "MyApp.pid",
